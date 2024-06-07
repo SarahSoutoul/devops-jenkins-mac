@@ -6,54 +6,23 @@ pipeline {
         PATH = "$dockerHome/bin:$mavenHome/bin:$PATH"
     }
     stages {
-        stage('Checkout') {
+        stage('Build') {
             steps {
                 sh 'mvn --version'
                 sh 'docker --version'
-                echo 'Checkout'
+                echo 'Build'
+                // Whats the path
                 echo "Path: $PATH"
+                // What"s the build number
                 echo "Build Number: $env.BUILD_NUMBER"
+                // Whats the build id
                 echo "Build ID: $env.BUILD_ID"
+                // What"s the build tag
                 echo "Build Tag: $env.BUILD_TAG"
+                // What"s the build url
                 echo "Build URL: $env.BUILD_URL"
+                // What"s the job name
                 echo "Job Name: $env.JOB_NAME"
-            }
-        }
-        stage('Compile') {
-            steps {
-                sh "mvn clean compile"
-            }
-        }
-        stage('Test') {
-            steps {
-                sh "mvn test"
-            }
-        }
-        stage('Integration Test') {
-            steps {
-                echo "integraiton tests"
-            }
-        }
-        stage('Package') {
-            steps {
-                sh "mvn package -DskipTests"
-            }
-        }
-        stage('Build Docker Image'){
-            steps {
-                script {
-                    dockerImage = docker.build("emilesherrott/currency-exchange-devops:${env.BUILD_TAG}")
-                }
-            }
-        }
-        stage('Push Docker Image'){
-            steps {
-                script {
-                    docker.withRegistry('', 'dockerhub') {
-                        dockerImage.push()
-                     dockerImage.push('latest')
-                    }
-                }
             }
         }
     } 
