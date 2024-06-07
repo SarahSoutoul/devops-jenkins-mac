@@ -29,6 +29,33 @@ pipeline {
                 sh "mvn test"
             }
         }
+        stage('Integration Test') {
+            steps {
+                echo "integraiton tests"
+            }
+        }
+        stage('Package') {
+            steps {
+                sh "mvn package -DskipTests"
+            }
+        }
+        stage('Build Docker Image'){
+            steps {
+                script {
+                    dockerImage = docker.build("emilesherrott/currency-exchange-devops:${env.BUILD_TAG}")
+                }
+            }
+        }
+        stage('Push Docker Image'){
+            steps {
+                script {
+                    docker.withRegistry('', 'dockerhub') {
+                        dockerImage.push()
+                     dockerImage.push('latest')
+                    }
+                }
+            }
+        }
     } 
     post {
         always {
